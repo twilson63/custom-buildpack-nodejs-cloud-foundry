@@ -41,10 +41,6 @@ Create a new app with this buildpack:
 Or add this buildpack to your current app:
 
     heroku config:add BUILDPACK_URL=https://github.com/mbuchetics/heroku-buildpack-nodejs-grunt.git
-    
-Enable heroku `user-env-compile` lab:
-    
-    heroku labs:enable user-env-compile
 
 Set the `NODE_ENV` environment variable (e.g. `development` or `production`):
 
