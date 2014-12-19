@@ -89,6 +89,10 @@ fi
     export_env_dir $env_dir
   fi
 
+  # Set NODE_ENV to development to allow download dev dependencies
+
+  export NODE_ENV=development
+
   status "Installing dependencies"
   # Make npm output to STDOUT instead of its default STDERR
   npm install --userconfig $build_dir/.npmrc 2>&1 | indent
