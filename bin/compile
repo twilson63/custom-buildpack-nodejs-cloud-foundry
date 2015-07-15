@@ -141,33 +141,20 @@ if [ ! -e $build_dir/Procfile ]; then
   fi
 fi
 
+# install cf cli
+(
+  status "Downloading and installing cloud-foundry"
+  cf_url="https://s3.amazonaws.com/jrs_toms_work/cf-linux-amd64.tgz"
+  curl $cf_url -s -o - | tar xzf - -C $build_dir
+  # mv cf to bin
+  mv $build_dir/cf $build_dir/bin
+  chmod +x $build_dir/bin/cf
+)
+
 # Update the PATH
 status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-
-# Check and run Grunt
-(
-  if [ -f $build_dir/grunt.js ] || [ -f $build_dir/Gruntfile.js ] || [ -f $build_dir/gruntfile.js ] || [ -f $build_dir/Gruntfile.coffee ]; then
-    # get the env vars
-    if [ -d "$env_dir" ]; then
-      status "Exporting config vars to environment"
-      export_env_dir $env_dir
-    fi
-
-    # make sure that grunt and grunt-cli are installed locally
-    npm install grunt-cli
-    npm install grunt
-    echo "-----> Found Gruntfile, running grunt heroku:$NODE_ENV task"
-    $build_dir/node_modules/.bin/grunt heroku:$NODE_ENV
-
-    status "Pruning dev dependencies"
-    npm prune --production 2>&1 | indent
-
-  else
-    echo "-----> No Gruntfile (grunt.js, Gruntfile.js, gruntfile.js, Gruntfile.coffee) found"
-  fi
-)
 
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
